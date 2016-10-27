@@ -1,1 +1,2 @@
-from inversefunc import *
+from inversefunc import inversefunc
+from utils import piecewise
