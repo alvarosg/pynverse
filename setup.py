@@ -3,12 +3,12 @@ from setuptools import setup
 setup(
     name='pynverse',
     packages=['pynverse'],
-    version='0.1',
-    description='A library for calculating the numbericla inverse of a function',
+    version='0.1.1',
+    description='A library for calculating the numberical inverse of a function',
     author='Alvaro Sanchez-Gonzalez',
     author_email='sanchezgnzlz.alvaro@gmail.com',
     url='https://github.com/alvarosg/pynverse',
-    download_url='https://github.com/alvarosg/pynverse/tarball/0.1',
+    download_url='https://github.com/alvarosg/pynverse/tarball/0.1.1',
     keywords=['inverse', 'function', 'numerical'],
     license='MIT',
     classifiers=[
