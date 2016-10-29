@@ -1,5 +1,5 @@
 
-from distutils.core import setup
+from setuptools import setup
 setup(
     name='pynverse',
     packages=['pynverse'],
@@ -10,7 +10,20 @@ setup(
     url='https://github.com/alvarosg/pynverse',
     download_url='https://github.com/alvarosg/pynverse/tarball/0.1',
     keywords=['inverse', 'function', 'numerical'],
-    classifiers=[],
+    license='MIT',
+    classifiers=[
+            'Development Status :: 4 - Beta',
+            'Intended Audience :: Developers',
+            'Topic :: Software Development :: Build Tools',
+            'License :: OSI Approved :: MIT License',
+            'Programming Language :: Python :: 2.7',
+            'Programming Language :: Python :: 3',
+            'Programming Language :: Python :: 3.2',
+            'Programming Language :: Python :: 3.3',
+            'Programming Language :: Python :: 3.4',
+            'Programming Language :: Python :: 3.5',
+    ],
+    install_requires=['scipy','numpy'],
 )
 
 
@@ -25,7 +38,3 @@ def configuration(parent_package='', top_path=None):
 
     config.add_subpackage('pynverse')
     return config
-
-if __name__ == '__main__':
-    from numpy.distutils.core import setup
-    setup(**configuration(top_path='').todict())
