@@ -1,44 +1,90 @@
-pynverse: A function that returns a callable that calculates the numerical inverse of the function `f` defined as an input callable. In its current form, it requires the function to be continuous in the real numbers, or in a predefined domain. Also, under those conditions, in order for the numerical inverse to exist in its domain, the input function must have strict monotonic (purely decreasing or purely increasing) behavior in that domain. By default the domain interval spans all the real numbers, however it can be restricted with the `domain` and `open_domain` arguments. The image of the function in the interval may be provided, for cases where the function is non continuous right at the end of an open interval.
+# pynverse [![PyPI version](https://badge.fury.io/py/pynverse.svg)](https://badge.fury.io/py/pynverse)
+
+A module specialized on calculating the numerical inverse of any invertible function.
 
 
+## Requirements
 
-Examples:
+  ![Scipy](https://img.shields.io/badge/scipy-%3E=0.11-blue.svg)
+  ![Scipy](https://img.shields.io/badge/numpy-%3E=1.6-blue.svg)
+
+## Install
+
+In order to install this tool you'll need `pip`:
+
+    pip install pynverse
+    
+## Usage
+
+Pynverse provides a central function `inversefunc` that calculates the numerical inverse of a function `f` passed as the first argument in the form of a callable. 
+```python
+    >>> from pynverse import inversefunc
 ```
-    >>> import scipy.misc
-    >>> import numpy as np
+
+It can be used to calculate the inverse function at certain `y_values` points:
+```python
     >>> cube = (lambda x: x**3)
-    >>> invcube = scipy.misc.inversefunc(cube)
-    >>> invcube(27) # Should give 3
+    >>> invcube = inversefunc(cube, y_values=3)
     array(3.0000000063797567)
+```
 
-    >>> square = (lambda x: x**2)
-    >>> invsquare = scipy.misc.inversefunc(square, domain=0)
-    >>> invsquare([4, 16, 64]) # Should give [2, 4, 8]
-    array([ 2.,  4.,  8.])
+Or to obtain a callable that will calculate the inverse values at any other points if `y_values` is not provided:
+```python
+    >>> invcube = inversefunc(cube)
+    >>> invcube(27)
+    array(3.0000000063797567)
+```
 
-    >>> log = (lambda x: np.log10(x))
-    >>> invlog = scipy.misc.inversefunc(log, domain=0, open_domain=True)
-    >>> invlog(-2.) # Should give 0.01
+It requires the function to be continuous and strictly monotonic (i.e. purely decreasing or purely increasing) within the domain of the function. By default, the domain includes all real numbers, but it can be restricted to an inverval using the `domain` argument:
+```python
+    >>> import numpy as np
+    >>> inversefunc(np.cos, y_values=[1, 0, -1], # Should give [0, pi / 2, pi]
+    ...             domain=[0, np.pi])
+    array([ 0.        ,  1.57079632,  3.14159265])
+```
+
+Additionally, the argument `open_domain` can be used to specify the open/closed characters of the end of the domain interval on one side:
+```python
+    >>> inversefunc(np.log10, y_values=-2, # Should give 0.01
+    ...             domain=0, open_domain=[True, False])
     array(0.0099999999882423)
+```
 
-    >>> cos = (lambda x: np.cos(x))
-    >>> invcos = scipy.misc.inversefunc(cos, domain=[0, np.pi])
-    >>> invcos([1, 0, -1]) # Should give [0, pi / 2, pi]
-    array([  5.44203736e-09,   1.57079632e+00,   3.14159265e+00])
-
-    >>> tan = (lambda x: np.tan(x))
-    >>> invtan = scipy.misc.inversefunc(tan,
-    ...                                 domain=[-np.pi / 2, np.pi / 2],
-    ...                                 open_domain=True)
+Or on both sides:
+```python
+    >>> invtan = inversefunc(np.tan,
+    ...                      domain=[-np.pi / 2, np.pi / 2],
+    ...                      open_domain=True)
     >>> invtan([1, 0, -1]) # Should give [pi / 4, 0, -pi / 4]
     array([  7.85398163e-01,   1.29246971e-26,  -7.85398163e-01])
 ```
 
-Examples of using the callables with vectors to make plots, and compare to the analytical inverse:
+Additional parameters may be passed to the function for easier reusability using the `args` argument:
 
-![examples](https://cloud.githubusercontent.com/assets/12649253/19738042/cf22460a-9bad-11e6-9c17-6fdd6cda0991.png)
+```python
+    >>> invsquare = inversefunc(np.power, args=(2), domain=0)
+    >>> invsquare([4, 16, 64])
+    array([ 2.,  4.,  8.])
+```
 
-Each of those calculated as simply as:
+The image of the function in the interval may be also provided for cases where the function is non continuous right at the end of an open interval with the `image` argument:
+
+```python
+    >>> invmod = inversefunc(np.mod, args=(1), domain=[5,6], 
+    ...                      open_domain=[False,True], image=[0,1])
+    >>> invmod([0.,0.3,0.5])
+    array([ 5. ,  5.3,  5.5])
+```
+
+Additionally an argument can be used to check for the number of digis of accuracy of the results. Giving a warning in case it is not meet:
+```python
+    >>> inversefunc(np.log10, y_values=-8, # Should give 0.01
+    ...             domain=0, open_domain=True, accuracy=6)
+    pynverse\inverse.py:195: RuntimeWarning: Results obtained with less than 6 decimal digits of accuracy
+    array(9.999514710830838e-09)
+```
+
+As it is compatible with arrays, it can very easily used to obtain the inverse for broad ranges. These are some examples of using the callables with vectors to make plots, and compare to the analytical inverse, each of them calculated as simply as:
 ```python
 log = lambda x: np.log10(x)
 invlog = scipy.misc.inversefunc(log, domain=0, open_domain=True)
@@ -51,14 +97,28 @@ invlog_a = lambda x: 10**x
 ax2.plot(x2,invlog_a(x2),'r--')
 ```
 
-Just to clarify, the main purpose of this function is not to be fast or to be as accurate as it could be if the inverse was calculated specifically for a known function. It is essentially a very user-friendly wrapper that uses the existing tools in scipy to solve the particular problem of finding the inverse of a function of those characteristics.
-The good thing about this is that checking the result of the inverse function is as easy as checking that f(finv(x))==x, so even if the user inputs a non valid function, they can always make sure that the output is consistent or good enough, in fact the function checks this internally automatically. 
-I see two type of users:
-* Users who need a quick way to get the inverse of a function, so they do not have to invest time on doing it themselves. They could use it, check if the results, and if it does not work, then decide to invest the time to do it manually with more sophisticated approaches. Nevertheless for many cases this will be good enough (See examples above).
-* Other functions that deal with monotonic functions, such as inverting cdf to ppf, or the normalization classes from matplotlib, which takes data intervals and map them linearly or non linearly to the 0-1 interval, using different non-linear functions. Essentially, any function that takes a callable of this characteristics, and may need at any point the inverse function, could very easily make use of this numerical approximation of the inverse.
+![examples](https://cloud.githubusercontent.com/assets/12649253/19738042/cf22460a-9bad-11e6-9c17-6fdd6cda0991.png)
 
+In particular, for the piecewise function case, there is a util funtion provided call `piecewise` that solves the issues of np.piecewise in order to make it work for both scalar and arrays. The functions for the last example were obtained as:
+
+```python
+from pynverse import inversefunc, piecewise
+
+pw=lambda x: piecewise(x,[x<1,(x>=1)*(x<3),x>=3],[lambda x: x, lambda x: x**2, lambda x: x+6])
+invpw =inversefunc(pw) 
+invpw_a=lambda x: piecewise(x,[x<1,(x>=1)*(x<9),x>=9],[lambda x: x, lambda x: x**0.5, lambda x: x-6])
+```
+
+## Disclaimer
+
+Just to clarify, the problem of calculating the numerical inverse of an arbitrary funtion in unlimited or open intervals, is still an open question in applied maths. The main purpose of this package is not to be fast, or as accurate as it could be if the inverse was calculated specifically for a known function, using more specialised techniques. The current implementation essentially uses the existing tools in scipy to solve the particular problem of finding the inverse of a function meeting the continuity and monotonicity conditions, but while it performs really well it may fail under certain conditions. For example when inverting a `log10` it is known to start giving inccacurate values when being asked to invert -10, which should correspond to 0.0000000001 (1e-10), but gives instead 0.0000000000978 (0.978e-10). 
+
+The advantage about estimating the inverse function is that the accuracy can be verified by checking if f(finv(x))==x.. 
+
+## Details about the implementation
 
 The summarized internal strategy is the following:
+
 0. Homogenize and normalize the input parameters.
 1. Figure out if the function is increasing or decreasing. For this two reference points ref1 and ref2are need:
   - In a case of a closed interval, the points can 1/4 and 3/4 through the interval.

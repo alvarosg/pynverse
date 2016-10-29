@@ -89,7 +89,7 @@ def inversefunc(func,
     array(0.0099999999882423)
     >>> inversefunc(np.cos, y_values=[1, 0, -1], # Should give [0, pi / 2, pi]
     ...             domain=[0, np.pi])
-    array([  5.44203736e-09,   1.57079632e+00,   3.14159265e+00])
+    array([ 0.        ,  1.57079632,  3.14159265])
     >>> invtan = inversefunc(np.tan,
     ...                      domain=[-np.pi / 2, np.pi / 2],
     ...                      open_domain=True)
@@ -119,7 +119,7 @@ def inversefunc(func,
     if ymin is None:
         ymin = _auto_ymin(func, args, xmin, xmax, trend)
     if ymax is None:
-        ymin = _auto_ymax(func, args, xmin, xmax, trend)
+        ymax = _auto_ymax(func, args, xmin, xmax, trend)
 
     # Creating bounded function
     def bounded_f(x):
@@ -140,28 +140,40 @@ def inversefunc(func,
         yin = np.asarray(yin, dtype=np.float64)
         shapein = yin.shape
         yin = yin.flatten()
-
         if ymin is not None:
-            if xmin_open:
+            if (xmin_open and trend == 1) or (xmax_open and trend == -1):
                 mask = yin <= ymin
             else:
                 mask = yin < ymin
             if yin[mask].size > 0:
-                ValueError("Requested values %s lower than the lower limit"
-                           "%g of the image" % (yin[mask], ymin))
+                raise ValueError("Requested values %s lower than the"
+                                 " lower limit %g of the image" %
+                                 (yin[mask], ymin))
         if ymax is not None:
-            if xmax_open:
+            if (xmax_open and trend == 1) or (xmin_open and trend == -1):
                 mask = yin >= ymax
             else:
                 mask = yin > ymax
             if yin[mask].size > 0:
-                ValueError("Requested values %s higher than the higher limit"
-                           "%g of the image" % (yin[mask], ymax))
+                raise ValueError("Requested values %s higher than the"
+                                 " higher limit %g of the image" %
+                                 (yin[mask], ymax))
 
         results = yin.copy() * np.nan
         resultsmask = np.zeros(yin.shape, dtype=np.bool)
 
         for j in range(yin.size):
+            if xmax is not None:
+                if bounded_f(xmax) == yin[j]:
+                    results[j] = xmax
+                    resultsmask[j] = True
+                    continue
+            if xmin is not None:
+                if bounded_f(xmin) == yin[j]:
+                    results[j] = xmin
+                    resultsmask[j] = True
+                    continue
+
             optimizer = (lambda x, j=j,
                          bounded_f=bounded_f: (((bounded_f(x) - yin[j]))**2))
             try:
