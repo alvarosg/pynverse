@@ -1,5 +1,9 @@
 __all__ = []
 
+
+from .inverse import *
+from .utils import *
+
 from . import inverse
 __all__ += inverse.__all__
 del inverse
@@ -14,12 +18,10 @@ del utils
 
 from numpy.testing import Tester
 from numpy import test
-#test = Tester().test
-test=test._tester.test
 
-#def test(level=1, verbosity=1):
-#    from numpy.testing import Tester
-#    return Tester().test(level, verbosity)
+def test(level=1, verbosity=1):
+    from numpy.testing import Tester
+    return Tester().test(level, verbosity)
 
 if __name__ == "__main__":
     import doctest
