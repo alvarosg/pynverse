@@ -6,7 +6,7 @@ A module specialized on calculating the numerical inverse of any invertible func
 ## Requirements
 
   ![Scipy](https://img.shields.io/badge/scipy-%3E=0.11-blue.svg)
-  ![Scipy](https://img.shields.io/badge/numpy-%3E=1.6-blue.svg)
+  ![Numpy](https://img.shields.io/badge/numpy-%3E=1.6-blue.svg)
 
 ## Install
 
