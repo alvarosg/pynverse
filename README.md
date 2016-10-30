@@ -97,16 +97,15 @@ invlog_a = lambda x: 10**x
 ax2.plot(x2,invlog_a(x2),'r--')
 ```
 
-![examples](https://cloud.githubusercontent.com/assets/12649253/19738042/cf22460a-9bad-11e6-9c17-6fdd6cda0991.png)
+![](https://cloud.githubusercontent.com/assets/12649253/19738042/cf22460a-9bad-11e6-9c17-6fdd6cda0991.png)
 
-In particular, for the piecewise function case, there is a util funtion provided call `piecewise` that solves the issues of np.piecewise in order to make it work for both scalar and arrays. The functions for the last example were obtained as:
+In particular, for the piecewise function case, there is `piecewise` util function provided that solves the issues of np.piecewise in order to make it work for both scalars and arrays. For example, the inverse for the last plot was obtained as:
 
 ```python
 from pynverse import inversefunc, piecewise
 
 pw=lambda x: piecewise(x,[x<1,(x>=1)*(x<3),x>=3],[lambda x: x, lambda x: x**2, lambda x: x+6])
 invpw =inversefunc(pw) 
-invpw_a=lambda x: piecewise(x,[x<1,(x>=1)*(x<9),x>=9],[lambda x: x, lambda x: x**0.5, lambda x: x-6])
 ```
 
 ## Disclaimer
