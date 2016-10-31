@@ -119,20 +119,20 @@ The advantage about estimating the inverse function is that the accuracy can alw
 The summarized internal strategy is the following:
 
 1. Figure out if the function is increasing or decreasing. For this two reference points ref1 and ref2 are needed:
-  - In case of a finite interval, the points ref points are 1/4 and 3/4 through the interval.
-  - In an infinite interval any two values work really.
-  - Tf f(ref1)<f(ref2), the function is increasing, otherwise is decreasing.
+    * In case of a finite interval, the points ref points are 1/4 and 3/4 through the interval.
+    * In an infinite interval any two values work really.
+    * If f(ref1)<f(ref2), the function is increasing, otherwise is decreasing.
 2. Figure out the image of the function in the interval. 
-  - If values are provided, then those are used.
-  - In a closed interval just calculate f(a) and f(b), where a and b are the ends of the interval.
-  - In an open interval try to calculate f(a) and f(b), if this works those are used, otherwise it will be assume to be (-Inf, Inf).
+    * If values are provided, then those are used.
+    * In a closed interval just calculate f(a) and f(b), where a and b are the ends of the interval.
+    * In an open interval try to calculate f(a) and f(b), if this works those are used, otherwise it will be assume to be (-Inf, Inf).
 3. Built a bounded function with the following conditions:
-  -bounded_f(x):
-    -return -Inf if x below interval, and f is increasing.
-    -return +Inf if x below interval, and f is decreasing.
-    -return +Inf if x above interval, and f is increasing.
-    -return -Inf if x above interval, and f is decreasing.
-    -return f(x) otherwise
+    * bounded_f(x):
+        * return -Inf if x below interval, and f is increasing.
+        * return +Inf if x below interval, and f is decreasing.
+        * return +Inf if x above interval, and f is increasing.
+        * return -Inf if x above interval, and f is decreasing.
+        * return f(x) otherwise
 4. If the required number y0 for the inverse is outside the image, raise an exception.
 5. Find roots for bounded_f(x)-y0, by minimizing (bounded_f(x)-y0)**2, using the `Brent` method, making sure that the algorithm for minimising starts in a point inside the original interval by setting ref1, ref2 as brackets. As soon as if goes outside the allowed intervals, bounded_f returns infinite, forcing the algorithm to go back to search inside the interval.
 6. Check that the solutions are accurate and they meet f(x0)=y0 to some desired precision, raising a warning otherwise. 
