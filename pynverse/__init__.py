@@ -1,6 +1,6 @@
 __all__ = []
 
-__version__ = '0.1.4'
+__version__ = '0.1.4.1'
 
 from .inverse import *
 from .utils import *

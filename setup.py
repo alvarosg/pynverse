@@ -28,6 +28,6 @@ setup(
     ],
     test_suite='nose.collector',
     install_requires=['scipy>=0.11', 'numpy>=1.6'],
-    setup_requires=['nose>=1.0'],
-    tests_require=['nose>=1.0'],
+    setup_requires=['nose>=1.0', 'scipy>=0.11', 'numpy>=1.6'],
+    tests_require=['nose>=1.0', 'scipy>=0.11', 'numpy>=1.6'],
 )
