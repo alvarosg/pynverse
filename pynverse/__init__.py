@@ -1,7 +1,7 @@
-__all__ = []
-
-
-from .version import version as __version__
+__all__ = [] 
+ 
+ 
+from .version import git_revision as __version__ 
 
 from .inverse import *
 from .utils import *

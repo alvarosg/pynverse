@@ -1,17 +1,19 @@
 
 from setuptools import setup, find_packages
+import imp
 
-from pynverse.version import version as version
+version = imp.load_source('pynverse.version', 'pynverse/version.py')
+rev = version.git_revision
 
 setup(
     name='pynverse',
     packages=find_packages(),
-    version=version,
+    version=rev,
     description='A library for calculating the numerical inverse of a function',
     author='Alvaro Sanchez-Gonzalez',
     author_email='sanchezgnzlz.alvaro@gmail.com',
     url='https://github.com/alvarosg/pynverse',
-    download_url='https://github.com/alvarosg/pynverse/tarball/' + version,
+    download_url='https://github.com/alvarosg/pynverse/tarball/' + rev,
     keywords=['inverse', 'function', 'numerical'],
     license='MIT',
     classifiers=[
