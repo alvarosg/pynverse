@@ -1,7 +1,7 @@
 
 from setuptools import setup, find_packages
 
-from pynverse import __version__ as version
+from pynverse.version import version as version
 
 setup(
     name='pynverse',

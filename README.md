@@ -1,6 +1,6 @@
 # pynverse [![PyPI version](https://badge.fury.io/py/pynverse.svg)](https://badge.fury.io/py/pynverse)
 
-A module specialized on calculating the numerical inverse of any invertible function.
+A module specialized on calculating the numerical inverse of any invertible continuous function.
 
 
 ## Requirements
@@ -16,7 +16,7 @@ In order to install this tool you'll need `pip`:
     
 ## Usage
 
-Pynverse provides a central function `inversefunc` that calculates the numerical inverse of a function `f` passed as the first argument in the form of a callable. 
+Pynverse provides a main function `inversefunc` that calculates the numerical inverse of a function `f` passed as the first argument in the form of a callable. 
 ```python
     >>> from pynverse import inversefunc
 ```
@@ -43,14 +43,14 @@ It requires the function to be continuous and strictly monotonic (i.e. purely de
     array([ 0.        ,  1.57079632,  3.14159265])
 ```
 
-Additionally, the argument `open_domain` can be used to specify the open/closed characters of the end of the domain interval on one side:
+Additionally, the argument `open_domain` can be used to specify the open/closed character of each of the ends of the domain interval:
 ```python
     >>> inversefunc(np.log10, y_values=-2, # Should give 0.01
     ...             domain=0, open_domain=[True, False])
     array(0.0099999999882423)
 ```
 
-Or on both sides:
+Or on both ends simultaneously:
 ```python
     >>> invtan = inversefunc(np.tan,
     ...                      domain=[-np.pi / 2, np.pi / 2],
@@ -59,7 +59,7 @@ Or on both sides:
     array([  7.85398163e-01,   1.29246971e-26,  -7.85398163e-01])
 ```
 
-Additional parameters may be passed to the function for easier reusability using the `args` argument:
+Additional parameters may be passed to the function for easier reusability of callables using the `args` argument:
 
 ```python
     >>> invsquare = inversefunc(np.power, args=(2), domain=0)
@@ -76,7 +76,7 @@ The image of the function in the interval may be also provided for cases where t
     array([ 5. ,  5.3,  5.5])
 ```
 
-Additionally an argument can be used to check for the number of digis of accuracy of the results. Giving a warning in case it is not meet:
+Additionally an argument can be used to check for the number of digits of accuracy in the results, giving a warning in case this is not meet:
 ```python
     >>> inversefunc(np.log10, y_values=-8, # Should give 0.01
     ...             domain=0, open_domain=True, accuracy=6)
@@ -84,7 +84,7 @@ Additionally an argument can be used to check for the number of digis of accurac
     array(9.999514710830838e-09)
 ```
 
-As it is compatible with arrays, it can very easily used to obtain the inverse for broad ranges. These are some examples of using the callables with vectors to make plots, and compare to the analytical inverse, each of them calculated as simply as:
+As it is compatible with arrays, it can very easily used to obtain the inverse for broad ranges. These are some examples of using the returned numerical inverse callables with arrays to make plots, and compare them to the analytical inverse, each of them calculated as simply as:
 ```python
 log = lambda x: np.log10(x)
 invlog = scipy.misc.inversefunc(log, domain=0, open_domain=True)
@@ -99,7 +99,7 @@ ax2.plot(x2,invlog_a(x2),'r--')
 
 ![](https://cloud.githubusercontent.com/assets/12649253/19738042/cf22460a-9bad-11e6-9c17-6fdd6cda0991.png)
 
-In particular, for the piecewise function case, there is `piecewise` util function provided that solves the issues of np.piecewise in order to make it work for both scalars and arrays. For example, the inverse for the last plot was obtained as:
+In particular, for the definition of piecewise functions, there is a `piecewise` utility function provided that solves the issues of np.piecewise when working with both scalars and arrays. For example, the inverse for the last plot was obtained as:
 
 ```python
 from pynverse import inversefunc, piecewise
@@ -110,24 +110,23 @@ invpw =inversefunc(pw)
 
 ## Disclaimer
 
-Just to clarify, the problem of calculating the numerical inverse of an arbitrary funtion in unlimited or open intervals, is still an open question in applied maths. The main purpose of this package is not to be fast, or as accurate as it could be if the inverse was calculated specifically for a known function, using more specialised techniques. The current implementation essentially uses the existing tools in scipy to solve the particular problem of finding the inverse of a function meeting the continuity and monotonicity conditions, but while it performs really well it may fail under certain conditions. For example when inverting a `log10` it is known to start giving inccacurate values when being asked to invert -10, which should correspond to 0.0000000001 (1e-10), but gives instead 0.0000000000978 (0.978e-10). 
+The problem of calculating the numerical inverse of an arbitrary funtion in unlimited or open intervals is still an open question in applied mathematics. The main purpose of this package is not to be fast, or as accurate as it could be if the inverse was calculated specifically for a known function, using more specialised techniques. The current implementation essentially uses the existing tools in scipy to solve the particular problem of finding the inverse of a function meeting the continuity and monotonicity conditions, but while it performs really well it may fail under certain conditions. For example when inverting a `log10` it is known to start giving inccacurate values when being asked to invert -10, which should correspond to 0.0000000001 (1e-10), but gives instead 0.0000000000978 (0.978e-10). 
 
-The advantage about estimating the inverse function is that the accuracy can be verified by checking if f(finv(x))==x.. 
+The advantage about estimating the inverse function is that the accuracy can always be verified by checking if f(finv(x))==x.. 
 
 ## Details about the implementation
 
 The summarized internal strategy is the following:
 
-0. Homogenize and normalize the input parameters.
-1. Figure out if the function is increasing or decreasing. For this two reference points ref1 and ref2are need:
-  - In a case of a closed interval, the points can 1/4 and 3/4 through the interval.
-  - In an open interval any two values would work really.
-  - if f(ref1)<(ref2), the function is increasing, otherwise is decreasing.
+1. Figure out if the function is increasing or decreasing. For this two reference points ref1 and ref2 are needed:
+  - In case of a finite interval, the points ref points are 1/4 and 3/4 through the interval.
+  - In an infinite interval any two values work really.
+  - Tf f(ref1)<f(ref2), the function is increasing, otherwise is decreasing.
 2. Figure out the image of the function in the interval. 
-  - If the user gives values, then those are used.
-  - In a closed interval just calculate f(a) and f(b).
-  - In a closed interval try to calculate f(a) and f(b), if this works those are used. other wise it will be assume to be (-Inf, Inf).
-3. I build a function the following function:
+  - If values are provided, then those are used.
+  - In a closed interval just calculate f(a) and f(b), where a and b are the ends of the interval.
+  - In an open interval try to calculate f(a) and f(b), if this works those are used, otherwise it will be assume to be (-Inf, Inf).
+3. Built a bounded function with the following conditions:
   -bounded_f(x):
     -return -Inf if x below interval, and f is increasing.
     -return +Inf if x below interval, and f is decreasing.
@@ -135,5 +134,5 @@ The summarized internal strategy is the following:
     -return -Inf if x above interval, and f is decreasing.
     -return f(x) otherwise
 4. If the required number y0 for the inverse is outside the image, raise an exception.
-5. I find roots for bounded_f(x)-y0, by minimizing (bounded_f(x)-y0)**2, using the `Brent` method, making sure that the algorithm for minimising starts in a point inside the original interval by setting ref1, ref2 as brackets. As soon as if goes outside the allowed intervals, bounded_f will return infinite, forcing the algorithm to go back to search inside the interval. This could be further improved, although the current performance, is quite good already.
+5. Find roots for bounded_f(x)-y0, by minimizing (bounded_f(x)-y0)**2, using the `Brent` method, making sure that the algorithm for minimising starts in a point inside the original interval by setting ref1, ref2 as brackets. As soon as if goes outside the allowed intervals, bounded_f returns infinite, forcing the algorithm to go back to search inside the interval.
 6. Check that the solutions are accurate and they meet f(x0)=y0 to some desired precision, raising a warning otherwise. 
