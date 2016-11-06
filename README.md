@@ -87,7 +87,7 @@ Additionally an argument can be used to check for the number of digits of accura
 As it is compatible with arrays, it can very easily used to obtain the inverse for broad ranges. These are some examples of using the returned numerical inverse callables with arrays to make plots, and compare them to the analytical inverse, each of them calculated as simply as:
 ```python
 log = lambda x: np.log10(x)
-invlog = scipy.misc.inversefunc(log, domain=0, open_domain=True)
+invlog = inversefunc(log, domain=0, open_domain=True)
 x1=np.linspace(0.00001,10,100)
 x2=np.linspace(-5,1,100)
 ax1.plot(x1,log(y1),'b-')
@@ -104,15 +104,16 @@ In particular, for the definition of piecewise functions, there is a `piecewise`
 ```python
 from pynverse import inversefunc, piecewise
 
-pw=lambda x: piecewise(x,[x<1,(x>=1)*(x<3),x>=3],[lambda x: x, lambda x: x**2, lambda x: x+6])
+pw=lambda x: piecewise(x,[x<1,(x>=1)*(x<3),x>=3],
+                       [lambda x: x, lambda x: x**2, lambda x: x+6])
 invpw =inversefunc(pw) 
 ```
 
 ## Disclaimer
 
-The problem of calculating the numerical inverse of an arbitrary funtion in unlimited or open intervals is still an open question in applied mathematics. The main purpose of this package is not to be fast, or as accurate as it could be if the inverse was calculated specifically for a known function, using more specialised techniques. The current implementation essentially uses the existing tools in scipy to solve the particular problem of finding the inverse of a function meeting the continuity and monotonicity conditions, but while it performs really well it may fail under certain conditions. For example when inverting a `log10` it is known to start giving inccacurate values when being asked to invert -10, which should correspond to 0.0000000001 (1e-10), but gives instead 0.0000000000978 (0.978e-10). 
+The problem of calculating the numerical inverse of an arbitrary function in unlimited or open intervals is still an open question in applied mathematics. The main purpose of this package is not to be fast, or as accurate as it could be if the inverse was calculated specifically for a known function, using more specialised techniques. The current implementation essentially uses the existing tools in scipy to solve the particular problem of finding the inverse of a function meeting the continuity and monotonicity conditions, but while it performs really well it may fail under certain conditions. For example when inverting a `log10` it is known to start giving inccacurate values when being asked to invert -10, which should correspond to 0.0000000001 (1e-10), but gives instead 0.0000000000978 (0.978e-10). 
 
-The advantage about estimating the inverse function is that the accuracy can always be verified by checking if f(finv(x))==x.. 
+The advantage about estimating the inverse function is that the accuracy can always be verified by checking if f(finv(x))==x.
 
 ## Details about the implementation
 
