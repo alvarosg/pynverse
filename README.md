@@ -24,7 +24,7 @@ Pynverse provides a main function `inversefunc` that calculates the numerical in
 It can be used to calculate the inverse function at certain `y_values` points:
 ```python
     >>> cube = (lambda x: x**3)
-    >>> invcube = inversefunc(cube, y_values=3)
+    >>> invcube = inversefunc(cube, y_values=27)
     array(3.0000000063797567)
 ```
 
