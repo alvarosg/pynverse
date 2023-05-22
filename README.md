@@ -12,7 +12,9 @@ A module specialized on calculating the numerical inverse of any invertible cont
 
 In order to install this tool you'll need `pip`:
 
-    pip install pynverse
+    pip install git+git://github.com/alvarosg/pynverse.git
+    
+Note installing from PyPI is not longer supported / maintained.
     
 ## Usage
 
