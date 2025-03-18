@@ -12,7 +12,7 @@ A module specialized on calculating the numerical inverse of any invertible cont
 
 In order to install this tool you'll need `pip`:
 
-    pip install git+git://github.com/alvarosg/pynverse.git
+    pip install git+https://github.com/alvarosg/pynverse.git
     
 Note installing from PyPI is not longer supported / maintained.
     
@@ -92,7 +92,7 @@ log = lambda x: np.log10(x)
 invlog = inversefunc(log, domain=0, open_domain=True)
 x1=np.linspace(0.00001,10,100)
 x2=np.linspace(-5,1,100)
-ax1.plot(x1,log(y1),'b-')
+ax1.plot(x1,log(x1),'b-')
 ax2.plot(x2,invlog(x2),'b-')
 
 invlog_a = lambda x: 10**x
